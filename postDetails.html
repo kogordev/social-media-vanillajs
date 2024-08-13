@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Media | Vanilla Js</title>
+  <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./node_modules/bootstrap-icons/bootstrap-icons.svg">
+  <link rel="stylesheet" href="./styles/style.css">
+  <link rel="icon" type="image/x-icon" href="./images/favicon.png">
+</head>
+
+
+<body style="background-color:#f0ecff;">
+
+
+  <!-- Templates -->
+  <!--  -->
+  <!-- Post -->
+  <template id="post-template">
+    <div class="card shadow my-2 post">
+      <h5 class="card-header">
+        <div>
+          <img id="profile-image" src="" alt="" style="width: 40PX; height: 40px;"
+            class="rounded-circle border border-2">
+          <b id="username"></b>
+        </div>
+        <div class="d-none">
+          <button class="btn btn-secondary d-none" id="edit-post">
+            Edit
+          </button>
+          <button class="btn btn-secondary d-none" id="delete-post">
+            Delete
+          </button>
+        </div>
+      </h5>
+      <div class="card-body">
+        <img id="post-image" src="" alt="" class="img-thumbnail" />
+        <h6 id="created-at" style="color: rgb(193, 193, 193);" class="mt-1">
+        </h6>
+        <h5 id="title">
+        </h5>
+        <p id="body">
+        </p>
+        <hr>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen"
+            viewBox="0 0 16 16">
+            <path
+              d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z" />
+          </svg>
+          <span id="comments-count">
+          </span>
+          <span id="tags">
+          </span>
+        </div>
+      </div>
+      <hr>
+      <div>
+        <div id="comments">
+       
+        </div>
+        <div id="add-comment-container" class="d-flex">
+          <div id="add-comment-container" class="input-group mb-3">
+            <input type="text" id="comment-input" class="form-control" placeholder="add your comment...">
+            <button type="button" id="comment-submit-button" class="btn btn-outline-primary h-100">submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  <!-- // Post -->
+  <!--  -->
+  <!-- Comment -->
+  <template id="comment-template">
+    <div id="comment" class="p-3" style="background-color: rgba(100, 149, 237, .1)">
+      <h5>
+        <img id="commenter-profile-image" src="" alt="" style="width: 40PX; height: 40px;"
+          class="rounded-circle border border-2">
+        <b id="commenter-username"></b>
+      </h5>
+      <p id="comment-body">
+
+      </p>
+    </div>
+  </template>
+  <!-- // Comment -->
+  <!--  -->
+  <!-- Alert -->
+  <template id="alert-template">
+    <div class="alert" style="z-index: 99999;" id="current-alert">
+      <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path
+            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+        </symbol>
+        <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path
+            d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+        </symbol>
+        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path
+            d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+        </symbol>
+      </svg>
+
+      <!-- alert-success/danger -->
+      <div id="alert-type" class="alert d-flex align-items-center position-fixed bottom-0 end-0 me-2 show fade"
+        role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
+          <use xlink:href="#check-circle-fill" />
+        </svg>
+        <div id="alert-msg">
+        </div>
+        <button type="button" class="btn-close ms-5" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+  </template>
+  <!-- // Alert -->
+  <!--  -->
+  <!--// Templates -->
+
+
+  <!-- MODALS -->
+  <!-- LOGIN MODAL -->
+  <div class="modal fade" id="login-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Username:</label>
+              <input type="text" class="form-control" id="username-input" value="testsoftware">
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Password:</label>
+              <input type="password" class="form-control" id="password-input" value="123456">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="login-button" type="button" class="btn btn-primary">Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- // LOGIN MODAL -->
+  <!-- REGISTER MODAL -->
+  <div class="modal fade" id="register-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Register a new User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="register-form">
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Name:</label>
+              <input type="text" class="form-control" id="register-name-input" value="testsoftware22">
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Username:</label>
+              <input type="text" class="form-control" id="register-username-input" value="testsoftware22">
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Password:</label>
+              <input type="password" class="form-control" id="register-password-input" value="123456">
+            </div>
+            <div class="mb-3">
+              <label for="register-profile-image" class="col-form-label">Image:</label>
+              <input type="file" class="form-control" id="register-profile-image" accept="image/*">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="register-button" type="button" class="btn btn-primary">Register</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- //REGISTER MODAL -->
+  <!-- // MODALS -->
+
+
+
+  <div id="main-wrapper">
+    <!-- NAVIGATION BAR CONTAINER -->
+    <div class="container">
+      <div class="d-flex justify-content-center">
+        <div class="col-9">
+          <nav class="navbar navbar-expand-lg bg-light shadow rounded-2 pt-3">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="./index.html">KogorDev</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="./index.html">Home</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="./userProfile.html">Profile</a>
+                  </li>
+                </ul>
+                <div class="d-flex w-100 justify-content-end gap-2">
+                  <div id="logged-in-user" class="d-flex align-items-center gap-1 me-2 d-none">
+                    <img src="" alt="" id="user-pic" style="width: 40px; height: 40px; border-radius: 50%;">
+                    <span id="username"></span>
+                  </div>
+                  <button type="button" class="btn btn-outline-danger d-none" id="nav-logout-button">Logout</button>
+                  <button type="button" class="btn btn-outline-success" id="nav-login-button" data-bs-toggle="modal"
+                    data-bs-target="#login-modal">Login</button>
+                  <button type="button" class="btn btn-outline-success" id="nav-register-button" data-bs-toggle="modal"
+                    data-bs-target="#register-modal">Register</button>
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <!-- // NAVIGATION BAR CONTAINER -->
+
+    <!-- MAIN CONTENT -->
+    <div class="container" style="height: 100vh;">
+      <!-- POSTS -->
+      <div class="d-flex justify-content-center mt-3">
+        <div class="col-9">
+          <div id="posts">
+           
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- // MAIN CONTENT -->
+
+  </div>
+
+  <script type="module" src="./js/postDetailsEvents.js"></script>
+</body>
+
+
+
+</html>
